@@ -1,0 +1,56 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'pmd'
+apply plugin: 'jacoco'
+apply plugin: 'project-report'
+apply plugin: 'build-dashboard'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+version = "1.0.0-SNAPSHOT"
+group = "awt"
+
+configurations {
+    testCompile.extendsFrom compileOnly
+    
+    buildDashboard.dependsOn check
+    buildDashboard.dependsOn jacocoTestReport
+    buildDashboard.dependsOn htmlDependencyReport
+}
+
+dependencies {
+    compile group: 'awt', name: 'jaxrs-healthcheck', version: '1.+'
+
+    compile group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: '2.1'
+ 
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.+'
+    compile group: 'com.typesafe', name: 'config', version: '1.3.2'
+
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+    testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.+'
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.+'
+    
+    testRuntime group: 'org.glassfish.jersey.containers', name: 'jersey-container-servlet', version: jerseyVersion
+    testRuntime group: 'org.glassfish.jersey.media', name: 'jersey-media-moxy', version: jerseyVersion
+    testRuntime group: 'org.glassfish.jersey.ext', name: 'jersey-bean-validation', version: jerseyVersion
+    
+    testRuntime group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.+'
+}
+
+task sourceJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allJava
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    classifier = 'javadoc'
+}
+
+artifacts {
+    archives sourceJar
+    archives javadocJar
+}
